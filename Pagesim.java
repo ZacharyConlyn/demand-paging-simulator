@@ -3,6 +3,9 @@ import java.util.ArrayList;
 import java.util.*;
 
 class Pagesim {
+	static final int V_PG = 10; // number of virtual pages (labeled from 0 to V_PG - 1)
+	static final int P_PG = 8; // max number of physical pages (labeled from 0 to PG -1)
+	
 	public static void main(String[] args) {
 		// read in physical frame numbers
 		int n = readArg(args);
@@ -41,7 +44,9 @@ class Pagesim {
 				// read reference string
 				rs = readRefString(in);
 				if (rs != null) {
-					System.out.println("Valid reference string saved.");
+					System.out.print("Valid reference string saved: ");
+					rs.print();
+					System.out.print(".");
 				} else {
 					System.out.println("Invalid reference string. Please try again.");
 				}
@@ -50,6 +55,7 @@ class Pagesim {
 				// generate reference string
 				System.out.println("How long do you want the reference string to be?");
 				int stringSize = getStringSize(in);
+				rs = generateString(stringSize, RS_MIN, RS_MAX);
 				break;
 				case "3":
 				// print reference string
@@ -93,9 +99,9 @@ class Pagesim {
 			System.exit(-1);
 		}
 		
-		// check if n is between 1 and 8
-		if (n < 1 || n > 8) {
-			System.out.println("Error: must be between 1 and 8 physical frames.");
+		// check if n is between 0 and N - 1
+		if (n < 1 || n >= PG_MAX) {
+			System.out.println("Error: must be between 1 and " + (PG_MAX - 1) + " physical frames.");
 			System.exit(-1);
 		}
 		
@@ -116,19 +122,28 @@ class Pagesim {
 			// create a scanner to operate on that line
 			Scanner lineScanner = new Scanner(line);
 			// extract the ints
-			int temp;
-			while (lineScanner.hasNextInt()) {
-				temp = lineScanner.nextInt();
+			String temp;
+			int tempInt = -1;
+			boolean isInt;
+			while (lineScanner.hasNext()) {
+				temp = lineScanner.next();
+				isInt = false;
+				try {
+					tempInt = Integer.parseInt(temp);
+					isInt = true;
+				} catch (NumberFormatException e) {
+					System.out.println("Warning: you entered a non-integer; \"" + temp + "\" ignored.");
+				}
 				// ensure that the numbers entered are between 0 and 9:
-				if (temp < 0 || temp > 9) {
-					System.out.println("Warning: numbers must be between 0 and 9; \"" + temp + "\" ignored.");
-				} else {
-					al.add(temp);
+				if (isInt && (tempInt < RS_MIN || tempInt > RS_MAX)) {
+					System.out.println("Warning: numbers must be between " + RS_MIN + " and " + RS_MAX + "; \"" + temp + "\" ignored.");
+				} else if (isInt) {
+					al.add(tempInt);
 				}
 			}
 			// make sure at least 1 valid int entered:
 			if (al.size() < 1) {
-				System.out.println("Error: you must enter at least 1 valid integer between 0 and 9.");
+				System.out.println("Error: you must enter at least 1 valid integer between 0 and 9. Please try again.");
 			} 
 		} while (al.size() < 1);
 		rs = new RefString(al);
@@ -152,5 +167,26 @@ class Pagesim {
 		}
 		// if int is out of bounds, give error
 		return stringSize;
+	}
+	
+	static RefString generateString(int n, int min, int max) {
+		// validate input
+		if (n < 1) {
+			System.out.println("Error: cannot create a reference string shorter than 1.");
+			return null;
+		}
+		Random rand = new Random();
+		
+		// create ArrayList for ints
+		ArrayList<Integer> ar = new ArrayList<Integer>();
+		// generate n random numbers and add them to the list.
+		for (int i = 0; i < n; i++) {
+			ar.add(rand.nextInt(max - min) + min);
+		}
+		
+		// use the ArrayList to create a RefString
+		RefString rs = new RefString(ar);
+		// return the RefString
+		return rs;
 	}
 }

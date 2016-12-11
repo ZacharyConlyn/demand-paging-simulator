@@ -55,7 +55,7 @@ class Pagesim {
 				// generate reference string
 				System.out.println("How long do you want the reference string to be?");
 				int stringSize = getStringSize(in);
-				rs = generateString(stringSize, RS_MIN, RS_MAX);
+				rs = generateString(stringSize, V_PG);
 				break;
 				case "3":
 				// print reference string
@@ -100,8 +100,8 @@ class Pagesim {
 		}
 		
 		// check if n is between 0 and N - 1
-		if (n < 1 || n >= PG_MAX) {
-			System.out.println("Error: must be between 1 and " + (PG_MAX - 1) + " physical frames.");
+		if (n < 1 || n >= P_PG) {
+			System.out.println("Error: must be between 1 and " + (P_PG - 1) + " physical frames.");
 			System.exit(-1);
 		}
 		
@@ -135,8 +135,8 @@ class Pagesim {
 					System.out.println("Warning: you entered a non-integer; \"" + temp + "\" ignored.");
 				}
 				// ensure that the numbers entered are between 0 and 9:
-				if (isInt && (tempInt < RS_MIN || tempInt > RS_MAX)) {
-					System.out.println("Warning: numbers must be between " + RS_MIN + " and " + RS_MAX + "; \"" + temp + "\" ignored.");
+				if (isInt && (tempInt < 0 || tempInt >= V_PG)) {
+					System.out.println("Warning: numbers must be between 0 and " + (V_PG - 1) + "; \"" + temp + "\" ignored.");
 				} else if (isInt) {
 					al.add(tempInt);
 				}
@@ -169,7 +169,7 @@ class Pagesim {
 		return stringSize;
 	}
 	
-	static RefString generateString(int n, int min, int max) {
+	static RefString generateString(int n, int max) {
 		// validate input
 		if (n < 1) {
 			System.out.println("Error: cannot create a reference string shorter than 1.");
@@ -181,7 +181,7 @@ class Pagesim {
 		ArrayList<Integer> ar = new ArrayList<Integer>();
 		// generate n random numbers and add them to the list.
 		for (int i = 0; i < n; i++) {
-			ar.add(rand.nextInt(max - min) + min);
+			ar.add(rand.nextInt(max - 1));
 		}
 		
 		// use the ArrayList to create a RefString

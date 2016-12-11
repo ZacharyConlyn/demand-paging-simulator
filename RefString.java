@@ -10,5 +10,13 @@ class RefString {
 	RefString(ArrayList<Integer> rs) {
 		refString = rs;
 	}
+	
+	void print() {
+		int i;
+		for (i = 0; i < refString.size() - 1; i++) {
+			System.out.print(refString.get(i) + ", ");
+		}
+		System.out.print(refString.get(i));
+	}
 
 }

@@ -1,5 +1,6 @@
 import java.util.Scanner;
 import java.util.ArrayList;
+import java.util.*;
 
 class Pagesim {
 	public static void main(String[] args) {
@@ -10,7 +11,7 @@ class Pagesim {
 		// set up for main loop
 		Scanner in = new Scanner(System.in);
 		String line; // input from user
-		RefString rs;
+		RefString rs = null;
 
 		
 		// begin main loop:
@@ -48,9 +49,15 @@ class Pagesim {
 				case "2":
 				// generate reference string
 				System.out.println("How long do you want the reference string to be?");
-				
+				int stringSize = getStringSize(in);
 				break;
 				case "3":
+				// print reference string
+				if (rs != null) {
+					rs.print();
+				} else {
+					System.out.println("Error: no reference string entered.");
+				}
 				break;
 				case "4":
 				break;
@@ -99,31 +106,51 @@ class Pagesim {
 	static RefString readRefString(Scanner in) {
 		System.out.println("Enter a series of numbers: ");
 		ArrayList<Integer> al = new ArrayList<Integer>();
-		// read in next line
-		String line = in.next();
-		in.nextLine();
-		// create a scanner to operate on that line
-		Scanner lineScanner = new Scanner(line);
-		// extract the ints
-		int temp;
-		while (lineScanner.hasNextInt()) {
-			temp = lineScanner.nextInt();
-			// ensure that the numbers we're entering are between 0 and 9:
-			if (temp < 0 || temp > 9) {
-				System.out.println("Warning: numbers must be between 0 and 9; \"" + temp + "\" ignored.");
-			} else {
-				al.add(temp);
-			}
-		}
+		
 		// create RefString
 		RefString rs = null;
-		// make sure at least 1 valid int entered:
-		if (al.size() < 1) {
-			System.out.println("Error: you must enter at least 1 valid integer between 0 and 9.");
-		} else { // create valid reference string
-			rs = new RefString(al);
 
-		}
+		do {
+			// read in a line
+			String line = in.nextLine();
+			// create a scanner to operate on that line
+			Scanner lineScanner = new Scanner(line);
+			// extract the ints
+			int temp;
+			while (lineScanner.hasNextInt()) {
+				temp = lineScanner.nextInt();
+				// ensure that the numbers entered are between 0 and 9:
+				if (temp < 0 || temp > 9) {
+					System.out.println("Warning: numbers must be between 0 and 9; \"" + temp + "\" ignored.");
+				} else {
+					al.add(temp);
+				}
+			}
+			// make sure at least 1 valid int entered:
+			if (al.size() < 1) {
+				System.out.println("Error: you must enter at least 1 valid integer between 0 and 9.");
+			} 
+		} while (al.size() < 1);
+		rs = new RefString(al);
 		return rs;
+	}
+	
+	static int getStringSize(Scanner in) {
+		//read in a line; parse an int
+		int stringSize = 0;
+		while (stringSize < 1) {
+			try {
+				stringSize = in.nextInt();
+			}
+			catch (InputMismatchException e) {
+				System.out.println("You must enter an integer.");
+			}
+			in.nextLine();
+			if (stringSize < 1) {
+				System.out.println("You must enter a positive integer.");
+			}
+		}
+		// if int is out of bounds, give error
+		return stringSize;
 	}
 }

@@ -8,14 +8,12 @@ class Pagesim {
 		System.out.println("Number of page frames set to " + n + ".");
 		
 		// set up for main loop
-		
 		Scanner in = new Scanner(System.in);
 		String line; // input from user
 		RefString rs;
 
 		
 		// begin main loop:
-		
 		while (true) {
 			System.out.println();
 			System.out.println("Please choose from the following options:");
@@ -64,9 +62,9 @@ class Pagesim {
 				break;
 				default:
 				break;
-			}
-		}
-	}
+			} // end switch
+		} // end while (true)
+	} // end main
 	
 	private static int readArg(String[] args) {
 		// check for correct number of arguments

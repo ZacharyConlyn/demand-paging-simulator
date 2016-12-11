@@ -43,24 +43,25 @@ class Pagesim {
 				case "1":
 				// read reference string
 				rs = readRefString(in);
-				if (rs != null) {
-					System.out.print("Valid reference string saved: ");
-					rs.print();
-					System.out.print(".");
-				} else {
-					System.out.println("Invalid reference string. Please try again.");
-				}
+				// confirm
+				stringConfirm(rs);
 				break;
 				case "2":
 				// generate reference string
+				// get length of desired string
 				System.out.println("How long do you want the reference string to be?");
 				int stringSize = getStringSize(in);
+				// generate the string
 				rs = generateString(stringSize, V_PG);
+				// confirm
+				stringConfirm(rs);
 				break;
 				case "3":
 				// print reference string
 				if (rs != null) {
+					System.out.print("Current reference string: ");
 					rs.print();
+					System.out.print(".");
 				} else {
 					System.out.println("Error: no reference string entered.");
 				}
@@ -170,6 +171,7 @@ class Pagesim {
 	}
 	
 	static RefString generateString(int n, int max) {
+		// NOTE: max is exclusive
 		// validate input
 		if (n < 1) {
 			System.out.println("Error: cannot create a reference string shorter than 1.");
@@ -181,12 +183,22 @@ class Pagesim {
 		ArrayList<Integer> ar = new ArrayList<Integer>();
 		// generate n random numbers and add them to the list.
 		for (int i = 0; i < n; i++) {
-			ar.add(rand.nextInt(max - 1));
+			ar.add(rand.nextInt(max));
 		}
 		
 		// use the ArrayList to create a RefString
 		RefString rs = new RefString(ar);
 		// return the RefString
 		return rs;
+	}
+	
+	static void stringConfirm(RefString rs) {
+		if (rs != null) {
+			System.out.print("Valid reference string saved: ");
+			rs.print();
+			System.out.print(".");
+		} else {
+			System.out.println("Invalid reference string. Please try again.");
+		}
 	}
 }

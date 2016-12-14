@@ -1,6 +1,7 @@
 import java.util.Scanner;
 import java.util.ArrayList;
-import java.util.*;
+import java.util.Random;
+import java.util.InputMismatchException;
 
 class Pagesim {
 	static final int V_PG = 10; // number of virtual pages (labeled from 0 to V_PG - 1)
@@ -67,12 +68,28 @@ class Pagesim {
 				}
 				break;
 				case "4":
+				// check that refString has been set:
+				if (rsIsSet(rs)) {
+					;
+				}
 				break;
 				case "5":
+				// check that refString has been set:
+				if (rsIsSet(rs)) {
+					;
+				}
 				break;
 				case "6":
+				// check that refString has been set:
+				if (rsIsSet(rs)) {
+					;
+				}
 				break;
 				case "7":
+				// check that refString has been set:
+				if (rsIsSet(rs)) {
+					;
+				}
 				break;
 				default:
 				break;
@@ -200,5 +217,13 @@ class Pagesim {
 		} else {
 			System.out.println("Invalid reference string. Please try again.");
 		}
+	}
+	
+	static boolean rsIsSet(RefString rs) {
+		if (rs != null) {
+			return true;
+		}
+		System.out.println("Error: reference string not yet entered/generated!");
+		return false;
 	}
 }

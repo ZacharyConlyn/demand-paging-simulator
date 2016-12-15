@@ -1,4 +1,4 @@
-Class VirtFrame {
+class Frame {
 	int number;
 	int inserted;
 	int nextUse;
@@ -7,6 +7,10 @@ Class VirtFrame {
 
 	VirtFrame(int n) {
 		number = n;
+		inserted = -1;
+		nextUse = -1;
+		lastUse = -1;
+		timesUsed = 0;
 	}
 	void setNum(int n) {
 		number = n;

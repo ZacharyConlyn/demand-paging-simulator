@@ -22,6 +22,9 @@ class RefString {
 		}
 		return -1;
 	}
+	int getAtIndex(int i) {
+		return refString.get(i);
+	}
 	void print() {
 		int i;
 		for (i = 0; i < refString.size() - 1; i++) {

@@ -10,7 +10,7 @@ class Pagesim {
 	public static void main(String[] args) {
 		// read in physical frame numbers
 		int numOfPhysicalFrames = readArg(args);
-		System.out.println("Number of page frames set to " + n + ".");
+		System.out.println("Number of page frames set to " + numOfPhysicalFrames + ".");
 		
 		// set up for main loop
 		Scanner in = new Scanner(System.in);
@@ -70,6 +70,7 @@ class Pagesim {
 				break;
 				case "4":
 				// check that refString has been set:
+				// test rs:
 				if (rsIsSet(rs)) {
 					fifoSim = new MemorySim(rs, numOfPhysicalFrames, V_PG);
 					fifoSim.generateFifo();
@@ -78,19 +79,19 @@ class Pagesim {
 				case "5":
 				// check that refString has been set:
 				if (rsIsSet(rs)) {
-					optSim = new MemorySim(rs, "opt");
+					optSim = new MemorySim(rs, numOfPhysicalFrames, V_PG);
 				}
 				break;
 				case "6":
 				// check that refString has been set:
 				if (rsIsSet(rs)) {
-					lruSim = new MemorySim(rs, "lru");
+					lruSim = new MemorySim(rs, numOfPhysicalFrames, V_PG);
 				}
 				break;
 				case "7":
 				// check that refString has been set:
 				if (rsIsSet(rs)) {
-					lfuSim = new MemorySim(rs, "lfu");
+					lfuSim = new MemorySim(rs, numOfPhysicalFrames, V_PG);
 				}
 				break;
 				default:

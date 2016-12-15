@@ -5,7 +5,7 @@ class Frame {
 	int lastUse;
 	int timesUsed;
 
-	VirtFrame(int n) {
+	Frame(int n) {
 		number = n;
 		inserted = -1;
 		nextUse = -1;

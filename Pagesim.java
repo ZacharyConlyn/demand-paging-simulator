@@ -6,19 +6,19 @@ import java.util.InputMismatchException;
 class Pagesim {
 	static final int V_PG = 10; // number of virtual pages (labeled from 0 to V_PG - 1)
 	static final int P_PG = 8; // max number of physical pages (labeled from 0 to PG -1)
-	
+
 	public static void main(String[] args) {
 		// read in physical frame numbers
 		int numOfPhysicalFrames = readArg(args);
 		System.out.println("Number of page frames set to " + numOfPhysicalFrames + ".");
-		
+
 		// set up for main loop
 		Scanner in = new Scanner(System.in);
 		String line; // input from user
 		RefString rs = null;
 		MemorySim lfuSim, fifoSim, optSim, lruSim;
 
-		
+
 		// begin main loop:
 		while (true) {
 			System.out.println();
@@ -32,7 +32,7 @@ class Pagesim {
 			System.out.println("6 - Simulate LRU");
 			System.out.println("7 - Simulate LFU");
 			System.out.println();
-			
+
 			// read input
 			line = in.next();
 			in.nextLine();
@@ -89,6 +89,8 @@ class Pagesim {
 				// check that refString has been set:
 				if (rsIsSet(rs)) {
 					lruSim = new MemorySim(rs, numOfPhysicalFrames, V_PG);
+					lruSim.generateLru();
+					lruSim.print();
 				}
 				break;
 				case "7":
@@ -102,7 +104,7 @@ class Pagesim {
 			} // end switch
 		} // end while (true)
 	} // end main
-	
+
 	private static int readArg(String[] args) {
 		// check for correct number of arguments
 		if (args.length < 1) {
@@ -114,7 +116,7 @@ class Pagesim {
 		}
 		// n will be our # of physical page frames
 		int n = -1;
-		
+
 		// try to parse int; catch exceptions
 		try {
 			n = Integer.parseInt(args[0]);
@@ -122,21 +124,21 @@ class Pagesim {
 			System.out.println("Error: argument must be an integer.");
 			System.exit(-1);
 		}
-		
+
 		// check if n is between 0 and N - 1
 		if (n < 1 || n >= P_PG) {
 			System.out.println("Error: must be between 1 and " + (P_PG - 1) + " physical frames.");
 			System.exit(-1);
 		}
-		
+
 		// everything worked out OK, return n!
 		return n;
 	}
-	
+
 	static RefString readRefString(Scanner in) {
 		System.out.println("Enter a series of numbers: ");
 		ArrayList<Integer> al = new ArrayList<Integer>();
-		
+
 		// create RefString
 		RefString rs = null;
 
@@ -168,12 +170,12 @@ class Pagesim {
 			// make sure at least 1 valid int entered:
 			if (al.size() < 1) {
 				System.out.println("Error: you must enter at least 1 valid integer between 0 and 9. Please try again.");
-			} 
+			}
 		} while (al.size() < 1);
 		rs = new RefString(al);
 		return rs;
 	}
-	
+
 	static int getStringSize(Scanner in) {
 		//read in a line; parse an int
 		int stringSize = 0;
@@ -192,7 +194,7 @@ class Pagesim {
 		// if int is out of bounds, give error
 		return stringSize;
 	}
-	
+
 	static RefString generateString(int n, int max) {
 		// NOTE: max is exclusive
 		// validate input
@@ -201,20 +203,20 @@ class Pagesim {
 			return null;
 		}
 		Random rand = new Random();
-		
+
 		// create ArrayList for ints
 		ArrayList<Integer> ar = new ArrayList<Integer>();
 		// generate n random numbers and add them to the list.
 		for (int i = 0; i < n; i++) {
 			ar.add(rand.nextInt(max));
 		}
-		
+
 		// use the ArrayList to create a RefString
 		RefString rs = new RefString(ar);
 		// return the RefString
 		return rs;
 	}
-	
+
 	static void stringConfirm(RefString rs) {
 		if (rs != null) {
 			System.out.print("Valid reference string saved: ");
@@ -224,7 +226,7 @@ class Pagesim {
 			System.out.println("Invalid reference string. Please try again.");
 		}
 	}
-	
+
 	static boolean rsIsSet(RefString rs) {
 		if (rs != null) {
 			return true;

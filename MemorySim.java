@@ -71,7 +71,7 @@ class MemorySim {
 		int empty;
 		int frameToReplace;
 		int[] listOfFrames;
-		
+
 		while (currentSlice < rsLen) {
 			// calculate next use for every frame
 			calculateNextUse(currentSlice);
@@ -109,38 +109,94 @@ class MemorySim {
 
 		}
 	}
-	
+
+	void generateLru() {
+		initialize();
+		algoType = "LRU";
+		int currentSlice = 0;
+		int frameToInsert;
+		int empty;
+		int frameToReplace;
+		int[] listOfFrames;
+		while (currentSlice < rsLen) {
+			// calculate next use for every frame
+			frameToInsert = rs.getAtIndex(currentSlice);
+			empty = findIndex(physicalMemory[currentSlice], -1);
+			// if it's already in memory...
+			if (findIndex(physicalMemory[currentSlice], frameToInsert) != -1) {
+			}
+			// if it's not in memory but there's an empty space for it...
+			else if (empty >= 0) {
+				pageChanged[currentSlice] = empty;
+				physicalMemory[currentSlice][empty] = frameToInsert;
+				frameArray[frameToInsert].setInserted(currentSlice);
+			}
+			// if it's not in memory and there's no empty space...
+			else {
+				// find least recently used
+				frameToReplace = findLru(physicalMemory[currentSlice]);
+				// replace it
+				physicalMemory[currentSlice][frameToReplace] = frameToInsert;
+				// update the new frame's recently used attribute
+			}
+			if ((currentSlice + 1) < rsLen) {
+				for (int i = 0; i < numOfPhysicalFrames; i ++) {
+					physicalMemory[currentSlice +1][i] = physicalMemory[currentSlice][i];
+				}
+			}
+			frameArray[frameToInsert].setLastUse(currentSlice);
+			System.out.println("Frame " + frameToInsert + " last use set to " + frameArray[frameToInsert].getLastUse());
+			currentSlice += 1;
+		}
+	}
+
+	int findLru(int[] a) {
+		System.out.println("Checking last uses...");
+		for (int i = 0; i < a.length; i++) {
+			System.out.println("Index " + i + ": " + frameArray[a[i]].getNum() + " last use: " + frameArray[a[i]].getLastUse());
+		}
+		int lruIndex = 0;
+		int lruLastUse = frameArray[a[lruIndex]].getLastUse();
+		System.out.println("Default last use page: " + a[lruIndex] + " at index " + lruIndex + " with last use at " + lruLastUse);
+
+		for (int i = 1; i < a.length; i++) {
+			int temp = a[i];
+			int tempLastUse = frameArray[a[i]].getLastUse();
+
+			if (tempLastUse < lruLastUse) {
+				lruIndex = i;
+				lruLastUse = tempLastUse;
+				System.out.println("New last use page: " + a[lruIndex] + " at index " + lruIndex + " with last use at" + lruLastUse);
+
+			}
+		}
+
+		return lruIndex;
+	}
+
 	int findLeastOptimal(int[] a) {
 		int leastOptimal = a[0];
 		int leastOptimalIndex = 0;
-		System.out.println("Default least optimal: " + leastOptimal);
 		int leastOptNextUse = frameArray[leastOptimal].getNextUse();
-		System.out.println("Default least optimal next use: " + leastOptNextUse);
 		for (int i = 1; i < a.length; i++) {
 			int temp = a[i];
-			System.out.println("Checking: " + temp);
 			int tempNextUse = frameArray[temp].getNextUse();
-			System.out.println("Next use: " + tempNextUse);
 			if (tempNextUse > leastOptNextUse) {
-				System.out.println("New least optimal found: " + temp);
 				leastOptimal = temp;
 				leastOptNextUse = frameArray[leastOptimal].getNextUse();
 				leastOptimalIndex = i;
 			}
 		}
-		System.out.println("Returning least optimal: " + leastOptimal);
 		return leastOptimalIndex;
 	}
 
 	void calculateNextUse(int n) {
 		for (int i = 0; i < numOfVirtualFrames; i++) {
 			frameArray[i].setNextUse(rsLen + 1);
-			System.out.println("Set " + i + " to defalt next use of " + (rsLen + 1));
 		}
 		for (int i = rsLen - 1; i >= n; i--) {
 			int called = rs.getAtIndex(i);
 			frameArray[called].setNextUse(i);
-			System.out.println(called + " called; set next use to " + frameArray[called].getNextUse());
 		}
 	}
 

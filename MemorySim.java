@@ -137,7 +137,6 @@ class MemorySim {
 				frameToReplace = findLru(physicalMemory[currentSlice]);
 				// replace it
 				physicalMemory[currentSlice][frameToReplace] = frameToInsert;
-				// update the new frame's recently used attribute
 			}
 			if ((currentSlice + 1) < rsLen) {
 				for (int i = 0; i < numOfPhysicalFrames; i ++) {
@@ -150,14 +149,63 @@ class MemorySim {
 		}
 	}
 
-	int findLru(int[] a) {
-		System.out.println("Checking last uses...");
-		for (int i = 0; i < a.length; i++) {
-			System.out.println("Index " + i + ": " + frameArray[a[i]].getNum() + " last use: " + frameArray[a[i]].getLastUse());
+	void generateLfu() {
+		initialize();
+		algoType = "LFU";
+		int currentSlice = 0;
+		int frameToInsert;
+		int empty;
+		int frameToReplace;
+		int[] listOfFrames;
+		while (currentSlice < rsLen) {
+			// calculate next use for every frame
+			frameToInsert = rs.getAtIndex(currentSlice);
+			empty = findIndex(physicalMemory[currentSlice], -1);
+			// if it's already in memory...
+			if (findIndex(physicalMemory[currentSlice], frameToInsert) != -1) {
+			}
+			// if it's not in memory but there's an empty space for it...
+			else if (empty >= 0) {
+				pageChanged[currentSlice] = empty;
+				physicalMemory[currentSlice][empty] = frameToInsert;
+				frameArray[frameToInsert].setInserted(currentSlice);
+			}
+			// if it's not in memory and there's no empty space...
+			else {
+				// find least recently used
+				frameToReplace = findLfu(physicalMemory[currentSlice]);
+				// replace it
+				physicalMemory[currentSlice][frameToReplace] = frameToInsert;
+			}
+			if ((currentSlice + 1) < rsLen) {
+				for (int i = 0; i < numOfPhysicalFrames; i ++) {
+					physicalMemory[currentSlice +1][i] = physicalMemory[currentSlice][i];
+				}
+			}
+			frameArray[frameToInsert].incrementTimesUsed();
+			currentSlice += 1;
 		}
+	}
+
+	int findLfu(int[] a) {
+		int lfuIndex = 0;
+		int lfuTimesUsed = frameArray[a[lfuIndex]].getTimesUsed();
+
+		for (int i = 1; i < a.length; i++) {
+			int temp = a[i];
+			int tempTimesUsed = frameArray[a[i]].getTimesUsed();
+
+			if (tempTimesUsed < lfuTimesUsed) {
+				lfuIndex = i;
+				lfuTimesUsed = tempTimesUsed;
+			}
+		}
+
+		return lfuIndex;
+	}
+	int findLru(int[] a) {
 		int lruIndex = 0;
 		int lruLastUse = frameArray[a[lruIndex]].getLastUse();
-		System.out.println("Default last use page: " + a[lruIndex] + " at index " + lruIndex + " with last use at " + lruLastUse);
 
 		for (int i = 1; i < a.length; i++) {
 			int temp = a[i];
@@ -166,7 +214,6 @@ class MemorySim {
 			if (tempLastUse < lruLastUse) {
 				lruIndex = i;
 				lruLastUse = tempLastUse;
-				System.out.println("New last use page: " + a[lruIndex] + " at index " + lruIndex + " with last use at" + lruLastUse);
 
 			}
 		}

@@ -97,6 +97,8 @@ class Pagesim {
 				// check that refString has been set:
 				if (rsIsSet(rs)) {
 					lfuSim = new MemorySim(rs, numOfPhysicalFrames, V_PG);
+					lfuSim.generateLfu();
+					lfuSim.print();
 				}
 				break;
 				default:

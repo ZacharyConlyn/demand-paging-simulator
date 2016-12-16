@@ -214,6 +214,8 @@ class MemorySim {
 			}
 			steppingSlice += 1;
 		}
+		System.out.print("Simluation finished. Press enter to continue.");
+		sc.nextLine();
 	}
 
 	int findIndex(int[] a, int n) {

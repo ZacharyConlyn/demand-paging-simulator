@@ -74,12 +74,15 @@ class Pagesim {
 				if (rsIsSet(rs)) {
 					fifoSim = new MemorySim(rs, numOfPhysicalFrames, V_PG);
 					fifoSim.generateFifo();
+					fifoSim.print();
 				}
 				break;
 				case "5":
 				// check that refString has been set:
 				if (rsIsSet(rs)) {
 					optSim = new MemorySim(rs, numOfPhysicalFrames, V_PG);
+					optSim.generateOpt();
+					optSim.print();
 				}
 				break;
 				case "6":

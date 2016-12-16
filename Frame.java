@@ -27,6 +27,9 @@ class Frame {
 	void setNextUse(int n) {
 		nextUse = n;
 	}
+	void decrementNextUse() {
+		nextUse -= 1;
+	}
 	int getNextUse() {
 		return nextUse;
 	}

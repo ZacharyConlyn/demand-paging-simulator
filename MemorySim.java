@@ -44,6 +44,11 @@ class MemorySim {
 		// the while loops step through each call of the simulation
 		while (currentSlice < rsLen) {
 			frameToInsert = rs.getAtIndex(currentSlice);
+			if (alg = "LRU") {
+				frameArray[frameToInsert].setLastUse(currentSlice);
+			} else if (alg = "LFU") {
+				frameArray[frameToInsert].incrementTimesUsed();
+			}
 			empty = findIndex(physicalMemory[currentSlice], -1);
 			// if the page we need is already in physical memory...
 			if (findIndex(physicalMemory[currentSlice], frameToInsert) != -1) {
@@ -73,13 +78,11 @@ class MemorySim {
 					case "LFU":
 					// find least recently used
 					frameToReplace = findLfu(physicalMemory[currentSlice]);
-					frameArray[frameToInsert].incrementTimesUsed();
 					break;
 					case "LRU":
 					// find least recently used
 					frameToReplace = findLru(physicalMemory[currentSlice]);
 					// update information for last use of the frame just called/
-					frameArray[frameToInsert].setLastUse(currentSlice);
 					break;
 					default:
 					System.out.println("Error: algorithm not recognized!");

@@ -30,7 +30,8 @@ class MemorySim {
 		physicalMemory = new int[rs.getLength()][phys];
 		frameArray = new Frame[virt];
 	}
-	// the "generateXXX()" methods use the reference string and supplied information
+	
+	// the "generate()" method uses the reference string and supplied information
 	// about the virtual and physical memory to run through simulations.
 	void generate(String alg) {
 		initialize();
@@ -101,7 +102,7 @@ class MemorySim {
 			currentSlice += 1;
 		}
 	}
-	
+
 	// find least frequently used frame, given an array containing frame numbers
 	int findLfu(int[] a) {
 		int lfuIndex = 0;
@@ -173,7 +174,7 @@ class MemorySim {
 		}
 	}
 
-	// initialize all the arrays used in generateXXX()
+	// initialize all the arrays used in generate()
 	void initialize() {
 		// set removed to -1s
 		for (int i = 0; i < removed.length; i++) {

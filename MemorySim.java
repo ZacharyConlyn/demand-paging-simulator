@@ -47,6 +47,10 @@ class MemorySim {
 			else {
 				// find the oldest frame
 				firstIn = findOldest(physicalMemory[currentSlice]);
+				// record removed frame
+				removed[currentSlice] = physicalMemory[currentSlice][firstIn];
+				// record new frame spot
+				pageChanged[currentSlice] = firstIn;
 				// put the new frame in that spot
 				physicalMemory[currentSlice][firstIn] = frameToInsert;
 				// update insertion time
@@ -90,12 +94,9 @@ class MemorySim {
 			// if it's not in memory and there's no empty space...
 			else {
 				// find the least optimal page
-				System.out.println("Being passed to least optimal: ");
-				for (int i = 0; i < physicalMemory[currentSlice].length; i ++) {
-					System.out.print(physicalMemory[currentSlice][i]);
-				}
-				System.out.println();
 				int leastOptimal = findLeastOptimal(physicalMemory[currentSlice]);
+				// record replaced frame
+				removed[currentSlice] = physicalMemory[currentSlice][leastOptimal];
 				// put in the new frame at that spot
 				physicalMemory[currentSlice][leastOptimal] = frameToInsert;
 			}
@@ -135,6 +136,8 @@ class MemorySim {
 			else {
 				// find least recently used
 				frameToReplace = findLru(physicalMemory[currentSlice]);
+				// record removed
+				removed[currentSlice] = frameToReplace;
 				// replace it
 				physicalMemory[currentSlice][frameToReplace] = frameToInsert;
 			}
@@ -144,7 +147,6 @@ class MemorySim {
 				}
 			}
 			frameArray[frameToInsert].setLastUse(currentSlice);
-			System.out.println("Frame " + frameToInsert + " last use set to " + frameArray[frameToInsert].getLastUse());
 			currentSlice += 1;
 		}
 	}
@@ -174,6 +176,8 @@ class MemorySim {
 			else {
 				// find least recently used
 				frameToReplace = findLfu(physicalMemory[currentSlice]);
+				// record it
+				removed[currentSlice] = physicalMemory[currentSlice][frameToReplace];
 				// replace it
 				physicalMemory[currentSlice][frameToReplace] = frameToInsert;
 			}
@@ -307,13 +311,16 @@ class MemorySim {
 			System.out.println("Program called virtual frame # " + rs.getAtIndex(steppingSlice));
 			System.out.println("Physical memory at time " + steppingSlice + ":");
 			for (int i = 0; i < numOfPhysicalFrames; i ++) {
-				System.out.print("Physical frame " + i + ":");
+				System.out.print("Physical frame " + i + ": ");
 				frameNum = physicalMemory[steppingSlice][i];
 				if (frameNum >= 0) {
 					System.out.println(frameNum);
 				} else {
 					System.out.println("x");
 				}
+			}
+			if (removed[steppingSlice] != -1) {
+				System.out.println("Frame removed: " + removed[steppingSlice]);
 			}
 			steppingSlice += 1;
 		}

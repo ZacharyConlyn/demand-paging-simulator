@@ -30,7 +30,7 @@ class MemorySim {
 		physicalMemory = new int[rs.getLength()][phys];
 		frameArray = new Frame[virt];
 	}
-	
+
 	// the "generate()" method uses the reference string and supplied information
 	// about the virtual and physical memory to run through simulations.
 	void generate(String alg) {
@@ -65,6 +65,8 @@ class MemorySim {
 					frameArray[frameToInsert].setInserted(currentSlice);
 					break;
 					case "OPT":
+					// calculate next uses
+					calculateNextUses(currentSlice);
 					// find the least optimal page
 					frameToReplace = findLeastOptimal(physicalMemory[currentSlice]);
 					break;
@@ -103,6 +105,21 @@ class MemorySim {
 		}
 	}
 
+	// find the first inserted Frame, given an array of Frame numbers
+	int findOldest(int[] a) {
+		int oldest = frameArray[a[0]].getInserted();
+		int oldestIndex = 0;
+		int checking;
+		for (int i = 1; i < a.length; i++) {
+			checking = frameArray[a[i]].getInserted();
+			if (checking < oldest) {
+				oldest = checking;
+				oldestIndex = i;
+			}
+		}
+		return oldestIndex;
+	}
+
 	// find least frequently used frame, given an array containing frame numbers
 	int findLfu(int[] a) {
 		int lfuIndex = 0;
@@ -133,10 +150,8 @@ class MemorySim {
 			if (tempLastUse < lruLastUse) {
 				lruIndex = i;
 				lruLastUse = tempLastUse;
-
 			}
 		}
-
 		return lruIndex;
 	}
 
@@ -160,7 +175,8 @@ class MemorySim {
 
 	// runs through each Frame object in the frameArray and finds the next use,
 	// and updates each Frame with that information
-	void calculateNextUse(int n) {
+	void calculateNextUses(int n) {
+		// n represents current call index in the reference string
 		// first it sets each Frame's next call to past the end of the reference
 		// string
 		for (int i = 0; i < numOfVirtualFrames; i++) {
@@ -195,21 +211,6 @@ class MemorySim {
 			}
 		}
 		algoType = "";
-	}
-
-	// find the first inserted Frame, given an array of Frame numbers
-	int findOldest(int[] a) {
-		int oldest = frameArray[a[0]].getInserted();
-		int oldestIndex = 0;
-		int checking;
-		for (int i = 1; i < a.length; i++) {
-			checking = frameArray[a[i]].getInserted();
-			if (checking < oldest) {
-				oldest = checking;
-				oldestIndex = i;
-			}
-		}
-		return oldestIndex;
 	}
 
 	// print the results of the simluation, one call at a time

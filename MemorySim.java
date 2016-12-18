@@ -254,7 +254,8 @@ class MemorySim {
 				}
 			}
 			removedInt = removed[steppingSlice];
-			System.out.println("Frame removed: " + (removedInt == -1 ? "None." : removedInt));
+			System.out.println("Page fault: " + (removedInt == -1 ? "No." : "Yes."));
+			System.out.println("Victim frame: " + (removedInt == -1 ? "None." : removedInt));
 			steppingSlice += 1;
 		}
 		System.out.print("Simluation finished. Press enter to continue.");

@@ -44,9 +44,9 @@ class MemorySim {
 		// the while loops step through each call of the simulation
 		while (currentSlice < rsLen) {
 			frameToInsert = rs.getAtIndex(currentSlice);
-			if (alg = "LRU") {
+			if (alg == "LRU") {
 				frameArray[frameToInsert].setLastUse(currentSlice);
-			} else if (alg = "LFU") {
+			} else if (alg == "LFU") {
 				frameArray[frameToInsert].incrementTimesUsed();
 			}
 			empty = findIndex(physicalMemory[currentSlice], -1);

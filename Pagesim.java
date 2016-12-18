@@ -12,7 +12,7 @@ import java.util.InputMismatchException;
 
 class Pagesim {
 	static final int V_PG = 10; // number of virtual pages (labeled from 0 to V_PG - 1)
-	static final int P_PG = 8; // max number of physical pages (labeled from 0 to PG -1)
+	static final int P_PG = 7; // max number of physical pages (labeled from 0 to PG -1)
 
 	public static void main(String[] args) {
 		// read in physical frame numbers
@@ -23,7 +23,7 @@ class Pagesim {
 		Scanner in = new Scanner(System.in);
 		String line; // input from user
 		RefString rs = null;
-		MemorySim lfuSim, fifoSim, optSim, lruSim;
+		MemorySim sim;
 
 
 		// begin main loop:
@@ -80,36 +80,36 @@ class Pagesim {
 				// test rs:
 				if (rsIsSet(rs)) {
 					// create simulation conditions, run it, and print
-					fifoSim = new MemorySim(rs, numOfPhysicalFrames, V_PG);
-					fifoSim.generate("FIFO");
-					fifoSim.print();
+					sim = new MemorySim(rs, numOfPhysicalFrames, V_PG);
+					sim.generate("FIFO");
+					sim.print();
 				}
 				break;
 				case "5":
 				// check that refString has been set:
 				if (rsIsSet(rs)) {
 					// create simulation conditions, run it, and print
-					optSim = new MemorySim(rs, numOfPhysicalFrames, V_PG);
-					optSim.generate("OPT");
-					optSim.print();
+					sim = new MemorySim(rs, numOfPhysicalFrames, V_PG);
+					sim.generate("OPT");
+					sim.print();
 				}
 				break;
 				case "6":
 				// check that refString has been set:
 				if (rsIsSet(rs)) {
 					// create simulation conditions, run it, and print
-					lruSim = new MemorySim(rs, numOfPhysicalFrames, V_PG);
-					lruSim.generate("LRU");
-					lruSim.print();
+					sim = new MemorySim(rs, numOfPhysicalFrames, V_PG);
+					sim.generate("LRU");
+					sim.print();
 				}
 				break;
 				case "7":
 				// check that refString has been set:
 				if (rsIsSet(rs)) {
 					// create simulation conditions, run it, and print
-					lfuSim = new MemorySim(rs, numOfPhysicalFrames, V_PG);
-					lfuSim.generate("LFU");
-					lfuSim.print();
+					sim = new MemorySim(rs, numOfPhysicalFrames, V_PG);
+					sim.generate("LFU");
+					sim.print();
 				}
 				break;
 				default:
@@ -139,8 +139,8 @@ class Pagesim {
 		}
 
 		// check if n is between 0 and N - 1
-		if (n < 1 || n >= P_PG) {
-			System.out.println("Error: must be between 1 and " + (P_PG - 1) + " physical frames.");
+		if (n < 1 || n > P_PG) {
+			System.out.println("Error: must be between 1 and " + (P_PG) + " physical frames.");
 			System.exit(-1);
 		}
 

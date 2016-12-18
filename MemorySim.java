@@ -12,6 +12,7 @@ class MemorySim {
 	RefString rs; // reference string object
 	int[] removed; // keep track of removed pages
 	int[] pageCalled; // keep track of physical page that was swapped/changed
+	boolean[] pageFault; // keeps track of page faults
 	int rsLen; // length of the reference string (number of calls to virtual memory)
 	int numOfPhysicalFrames;
 	int numOfVirtualFrames;
@@ -29,6 +30,7 @@ class MemorySim {
 		numOfVirtualFrames = virt;
 		physicalMemory = new int[rs.getLength()][phys];
 		frameArray = new Frame[virt];
+		pageFault = new boolean[rsLen];
 	}
 
 	// the "generate()" method uses the reference string and supplied information
@@ -55,6 +57,8 @@ class MemorySim {
 			inMemory = findIndex(physicalMemory[currentSlice], frameToInsert);
 			if (inMemory != -1) {
 				pageCalled[currentSlice] = inMemory;
+				// no page fault!
+				pageFault[currentSlice] = false;
 			}
 			// if it's not in memory but there's an empty space for it...
 			else if (empty >= 0) {
@@ -198,6 +202,10 @@ class MemorySim {
 
 	// initialize all the arrays used in generate()
 	void initialize() {
+		// set page faults to false
+		for (int i = 0; i < pageFault.length; i++) {
+			pageFault[i] = true;
+		}
 		// set removed to -1s
 		for (int i = 0; i < removed.length; i++) {
 			removed[i] = -1;
@@ -257,7 +265,7 @@ class MemorySim {
 				}
 			}
 			removedInt = removed[steppingSlice];
-			System.out.println("Page fault: " + (removedInt == -1 ? "No." : "Yes."));
+			System.out.println("Page fault: " + (pageFault[steppingSlice] ? "Yes." : "No."));
 			System.out.println("Victim frame: " + (removedInt == -1 ? "None." : removedInt));
 			steppingSlice += 1;
 		}

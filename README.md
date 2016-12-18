@@ -12,6 +12,7 @@ Specifications:
 - Reference strings (i.e. strings representing the virtual frames being called) to be entered manually or via random generation
 
 - menu-based UI with robust error handling
+
 ## Design & Implementation
 ### Input validation and error handling
 The first task of the program is to read in the command line argument and validate it. The method readArgs() checks the input. If there were no arguments entered, there is an error and the program exits. If it is more, a warning is printed that other arguments were ignored. If the input is not an integer, the program catches it as a NumberFormatException from Integer.ParseInt() and exits. If the integer is not between 1 and 7, the program prints an error that the required number of physical pages must be between 1 and 7 (the upper limit is controlled by the P_PG constant in the program and can be changed).

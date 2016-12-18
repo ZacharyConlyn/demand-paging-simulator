@@ -2,7 +2,7 @@
 // Author: Zachary Conlyn
 // Date: December 17, 2016
 // Class: CMSC 412
-// Purpose: Simple object to represent a virtual page frame and meta-information
+// Purpose: Simple class to represent a virtual page frame and meta-information
 // needed to run page replacement algorithms. Designed to work with Pagesim.java
 
 class Frame {

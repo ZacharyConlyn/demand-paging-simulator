@@ -2,7 +2,7 @@
 // Author: Zachary Conlyn
 // Date: December 17 2016
 // Class: CMSC 412
-// Purpose: Memory simulation object that holds information about physical
+// Purpose: Memory simulation class that holds information about physical
 // and virtual memory of a system, and has methods to run and print results of
 // various algorithms. Designed to work with Pagesim.java
 

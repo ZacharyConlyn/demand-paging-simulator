@@ -30,7 +30,6 @@ class MemorySim {
 		int empty;
 		int frameToReplace;
 		int[] listOfFrames;
-		int firstIn;
 		while (currentSlice < rsLen) {
 			frameToInsert = rs.getAtIndex(currentSlice);
 			empty = findIndex(physicalMemory[currentSlice], -1);
@@ -46,13 +45,13 @@ class MemorySim {
 			// not in memory and no empty space
 			else {
 				// find the oldest frame
-				firstIn = findOldest(physicalMemory[currentSlice]);
+				frameToReplace = findOldest(physicalMemory[currentSlice]);
 				// record removed frame
-				removed[currentSlice] = physicalMemory[currentSlice][firstIn];
+				removed[currentSlice] = physicalMemory[currentSlice][frameToReplace];
 				// record new frame spot
-				pageChanged[currentSlice] = firstIn;
+				pageChanged[currentSlice] = frameToReplace;
 				// put the new frame in that spot
-				physicalMemory[currentSlice][firstIn] = frameToInsert;
+				physicalMemory[currentSlice][frameToReplace] = frameToInsert;
 				// update insertion time
 				frameArray[frameToInsert].setInserted(currentSlice);
 
@@ -94,11 +93,13 @@ class MemorySim {
 			// if it's not in memory and there's no empty space...
 			else {
 				// find the least optimal page
-				int leastOptimal = findLeastOptimal(physicalMemory[currentSlice]);
+				frameToReplace = findLeastOptimal(physicalMemory[currentSlice]);
 				// record replaced frame
-				removed[currentSlice] = physicalMemory[currentSlice][leastOptimal];
+				removed[currentSlice] = physicalMemory[currentSlice][frameToReplace];
+				// record new frame spot
+				pageChanged[currentSlice] = frameToReplace;
 				// put in the new frame at that spot
-				physicalMemory[currentSlice][leastOptimal] = frameToInsert;
+				physicalMemory[currentSlice][frameToReplace] = frameToInsert;
 			}
 			if ((currentSlice + 1) < rsLen) {
 				for (int i = 0; i < numOfPhysicalFrames; i ++) {
@@ -137,7 +138,9 @@ class MemorySim {
 				// find least recently used
 				frameToReplace = findLru(physicalMemory[currentSlice]);
 				// record removed
-				removed[currentSlice] = frameToReplace;
+				removed[currentSlice] = physicalMemory[currentSlice][frameToReplace];
+				// record new frame spot
+				pageChanged[currentSlice] = frameToReplace;
 				// replace it
 				physicalMemory[currentSlice][frameToReplace] = frameToInsert;
 			}
@@ -178,6 +181,8 @@ class MemorySim {
 				frameToReplace = findLfu(physicalMemory[currentSlice]);
 				// record it
 				removed[currentSlice] = physicalMemory[currentSlice][frameToReplace];
+				// record new frame spot
+				pageChanged[currentSlice] = frameToReplace;
 				// replace it
 				physicalMemory[currentSlice][frameToReplace] = frameToInsert;
 			}
@@ -302,26 +307,30 @@ class MemorySim {
 		int steppingSlice = 0;
 		String prompt;
 		int frameNum;
+		int removedInt;
 		while (steppingSlice < rsLen) {
 			prompt = sc.nextLine();
 			if (prompt.equals("q")) {
 				System.out.println("Quitting printout.");
 				break;
 			}
+			System.out.println("Snapshot at time " + steppingSlice + ":");
 			System.out.println("Program called virtual frame # " + rs.getAtIndex(steppingSlice));
-			System.out.println("Physical memory at time " + steppingSlice + ":");
 			for (int i = 0; i < numOfPhysicalFrames; i ++) {
-				System.out.print("Physical frame " + i + ": ");
+				System.out.print("Physical frame " + i + ":");
 				frameNum = physicalMemory[steppingSlice][i];
 				if (frameNum >= 0) {
-					System.out.println(frameNum);
+					if (i == pageChanged[steppingSlice]) {
+						System.out.println("[" + frameNum + "]");
+					} else {
+						System.out.println(" " + frameNum);
+					}
 				} else {
 					System.out.println("x");
 				}
 			}
-			if (removed[steppingSlice] != -1) {
-				System.out.println("Frame removed: " + removed[steppingSlice]);
-			}
+			removedInt = removed[steppingSlice];
+			System.out.println("Frame removed: " + (removedInt == -1 ? "None." : removedInt));
 			steppingSlice += 1;
 		}
 		System.out.print("Simluation finished. Press enter to continue.");

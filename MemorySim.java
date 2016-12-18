@@ -236,7 +236,7 @@ class MemorySim {
 		System.out.println("Number of physical pages: " + numOfPhysicalFrames);
 		System.out.println("---");
 		System.out.println("[brackets] around a page number indicate it was called.");
-		System.out.println("Press enter to step through snapshots of physical memory after each string call.")
+		System.out.println("Press enter to step through snapshots of physical memory after each string call.");
 		System.out.println("Or, enter \"q\" at any time to return to main menu.");
 
 		Scanner sc = new Scanner(System.in);

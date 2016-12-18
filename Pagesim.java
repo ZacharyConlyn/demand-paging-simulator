@@ -81,7 +81,7 @@ class Pagesim {
 				if (rsIsSet(rs)) {
 					// create simulation conditions, run it, and print
 					fifoSim = new MemorySim(rs, numOfPhysicalFrames, V_PG);
-					fifoSim.generateFifo();
+					fifoSim.generate("FIFO");
 					fifoSim.print();
 				}
 				break;
@@ -90,7 +90,7 @@ class Pagesim {
 				if (rsIsSet(rs)) {
 					// create simulation conditions, run it, and print
 					optSim = new MemorySim(rs, numOfPhysicalFrames, V_PG);
-					optSim.generateOpt();
+					optSim.generate("OPT");
 					optSim.print();
 				}
 				break;
@@ -99,7 +99,7 @@ class Pagesim {
 				if (rsIsSet(rs)) {
 					// create simulation conditions, run it, and print
 					lruSim = new MemorySim(rs, numOfPhysicalFrames, V_PG);
-					lruSim.generateLru();
+					lruSim.generate("LRU");
 					lruSim.print();
 				}
 				break;
@@ -108,7 +108,7 @@ class Pagesim {
 				if (rsIsSet(rs)) {
 					// create simulation conditions, run it, and print
 					lfuSim = new MemorySim(rs, numOfPhysicalFrames, V_PG);
-					lfuSim.generateLfu();
+					lfuSim.generate("LFU");
 					lfuSim.print();
 				}
 				break;

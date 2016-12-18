@@ -32,9 +32,9 @@ class MemorySim {
 	}
 	// the "generateXXX()" methods use the reference string and supplied information
 	// about the virtual and physical memory to run through simulations.
-	void generateFifo() {
+	void generate(String alg) {
 		initialize();
-		algoType = "FIFO";
+		algoType = alg;
 		int currentSlice = 0;
 		int frameToInsert;
 		int empty;
@@ -55,16 +55,39 @@ class MemorySim {
 			}
 			// not in memory and no empty space
 			else {
-				// find the oldest frame
-				frameToReplace = findOldest(physicalMemory[currentSlice]);
+				// find the frame to be removed depending on the algo
+				switch (alg) {
+					case "FIFO":
+					// find the oldest frame
+					frameToReplace = findOldest(physicalMemory[currentSlice]);
+					// update insertion time
+					frameArray[frameToInsert].setInserted(currentSlice);
+					break;
+					case "OPT":
+					// find the least optimal page
+					frameToReplace = findLeastOptimal(physicalMemory[currentSlice]);
+					break;
+					case "LFU":
+					// find least recently used
+					frameToReplace = findLfu(physicalMemory[currentSlice]);
+					frameArray[frameToInsert].incrementTimesUsed();
+					break;
+					case "LRU":
+					// find least recently used
+					frameToReplace = findLru(physicalMemory[currentSlice]);
+					// update information for last use of the frame just called/
+					frameArray[frameToInsert].setLastUse(currentSlice);
+					break;
+					default:
+					System.out.println("Error: algorithm not recognized!");
+					return;
+				}
 				// record removed frame
 				removed[currentSlice] = physicalMemory[currentSlice][frameToReplace];
 				// record new frame spot
 				pageChanged[currentSlice] = frameToReplace;
 				// put the new frame in that spot
 				physicalMemory[currentSlice][frameToReplace] = frameToInsert;
-				// update insertion time
-				frameArray[frameToInsert].setInserted(currentSlice);
 
 
 			}
@@ -78,142 +101,7 @@ class MemorySim {
 			currentSlice += 1;
 		}
 	}
-
-	void generateOpt() {
-		initialize();
-		algoType = "OPT";
-		int currentSlice = 0;
-		int frameToInsert;
-		int empty;
-		int frameToReplace;
-		int[] listOfFrames;
-
-		while (currentSlice < rsLen) {
-			// calculate next use for every frame
-			calculateNextUse(currentSlice);
-
-			frameToInsert = rs.getAtIndex(currentSlice);
-			empty = findIndex(physicalMemory[currentSlice], -1);
-			// if it's already in memory...
-			if (findIndex(physicalMemory[currentSlice], frameToInsert) != -1) {
-			}
-			// if it's not in memory but there's an empty space for it...
-			else if (empty >= 0) {
-				pageChanged[currentSlice] = empty;
-				physicalMemory[currentSlice][empty] = frameToInsert;
-				frameArray[frameToInsert].setInserted(currentSlice);
-			}
-			// if it's not in memory and there's no empty space...
-			else {
-				// find the least optimal page
-				frameToReplace = findLeastOptimal(physicalMemory[currentSlice]);
-				// record replaced frame
-				removed[currentSlice] = physicalMemory[currentSlice][frameToReplace];
-				// record new frame spot
-				pageChanged[currentSlice] = frameToReplace;
-				// put in the new frame at that spot
-				physicalMemory[currentSlice][frameToReplace] = frameToInsert;
-			}
-			// make the physical memory for the next call a copy of the physical
-			// memory at the end of this call
-			if ((currentSlice + 1) < rsLen) {
-				for (int i = 0; i < numOfPhysicalFrames; i ++) {
-					physicalMemory[currentSlice +1][i] = physicalMemory[currentSlice][i];
-				}
-			}
-			currentSlice += 1;
-		}
-	}
-
-	void generateLru() {
-		initialize();
-		algoType = "LRU";
-		int currentSlice = 0;
-		int frameToInsert;
-		int empty;
-		int frameToReplace;
-		int[] listOfFrames;
-		while (currentSlice < rsLen) {
-			// calculate next use for every frame
-			frameToInsert = rs.getAtIndex(currentSlice);
-			empty = findIndex(physicalMemory[currentSlice], -1);
-			// if it's already in memory...
-			if (findIndex(physicalMemory[currentSlice], frameToInsert) != -1) {
-			}
-			// if it's not in memory but there's an empty space for it...
-			else if (empty >= 0) {
-				pageChanged[currentSlice] = empty;
-				physicalMemory[currentSlice][empty] = frameToInsert;
-				frameArray[frameToInsert].setInserted(currentSlice);
-			}
-			// if it's not in memory and there's no empty space...
-			else {
-				// find least recently used
-				frameToReplace = findLru(physicalMemory[currentSlice]);
-				// record removed
-				removed[currentSlice] = physicalMemory[currentSlice][frameToReplace];
-				// record new frame spot
-				pageChanged[currentSlice] = frameToReplace;
-				// replace it
-				physicalMemory[currentSlice][frameToReplace] = frameToInsert;
-			}
-			// make the physical memory for the next call a copy of the physical
-			// memory at the end of this call
-			if ((currentSlice + 1) < rsLen) {
-				for (int i = 0; i < numOfPhysicalFrames; i ++) {
-					physicalMemory[currentSlice +1][i] = physicalMemory[currentSlice][i];
-				}
-			}
-			// update information for last use of the frame just called/
-			frameArray[frameToInsert].setLastUse(currentSlice);
-			currentSlice += 1;
-		}
-	}
-
-	void generateLfu() {
-		initialize();
-		algoType = "LFU";
-		int currentSlice = 0;
-		int frameToInsert;
-		int empty;
-		int frameToReplace;
-		int[] listOfFrames;
-		while (currentSlice < rsLen) {
-			// calculate next use for every frame
-			frameToInsert = rs.getAtIndex(currentSlice);
-			empty = findIndex(physicalMemory[currentSlice], -1);
-			// if it's already in memory...
-			if (findIndex(physicalMemory[currentSlice], frameToInsert) != -1) {
-			}
-			// if it's not in memory but there's an empty space for it...
-			else if (empty >= 0) {
-				pageChanged[currentSlice] = empty;
-				physicalMemory[currentSlice][empty] = frameToInsert;
-				frameArray[frameToInsert].setInserted(currentSlice);
-			}
-			// if it's not in memory and there's no empty space...
-			else {
-				// find least recently used
-				frameToReplace = findLfu(physicalMemory[currentSlice]);
-				// record it
-				removed[currentSlice] = physicalMemory[currentSlice][frameToReplace];
-				// record new frame spot
-				pageChanged[currentSlice] = frameToReplace;
-				// replace it
-				physicalMemory[currentSlice][frameToReplace] = frameToInsert;
-			}
-			if ((currentSlice + 1) < rsLen) {
-				for (int i = 0; i < numOfPhysicalFrames; i ++) {
-					physicalMemory[currentSlice +1][i] = physicalMemory[currentSlice][i];
-				}
-			}
-			// make the physical memory for the next call a copy of the physical
-			// memory at the end of this call
-			frameArray[frameToInsert].incrementTimesUsed();
-			currentSlice += 1;
-		}
-	}
-
+	
 	// find least frequently used frame, given an array containing frame numbers
 	int findLfu(int[] a) {
 		int lfuIndex = 0;

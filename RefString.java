@@ -13,13 +13,11 @@ class RefString {
 	// this base constructor is not used in Pagesim.java
 	RefString() {
 		refString = new ArrayList<Integer>();
-		next = 0;
 	}
 
 	// this constructor lets you pass in a premade ArrayList of ints
 	RefString(ArrayList<Integer> rs) {
 		refString = rs;
-		next = 0;
 	}
 
 	// accessor methods

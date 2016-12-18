@@ -11,7 +11,7 @@ import java.util.Scanner;
 class MemorySim {
 	RefString rs; // reference string object
 	int[] removed; // keep track of removed pages
-	int[] pageChanged; // keep track of physical page that was swapped/changed
+	int[] pageCalled; // keep track of physical page that was swapped/changed
 	int rsLen; // length of the reference string (number of calls to virtual memory)
 	int numOfPhysicalFrames;
 	int numOfVirtualFrames;
@@ -24,7 +24,7 @@ class MemorySim {
 		rs = refs;
 		rsLen = rs.getLength();
 		removed = new int[rsLen];
-		pageChanged = new int[rsLen];
+		pageCalled = new int[rsLen];
 		numOfPhysicalFrames = phys;
 		numOfVirtualFrames = virt;
 		physicalMemory = new int[rs.getLength()][phys];
@@ -41,6 +41,7 @@ class MemorySim {
 		int empty;
 		int frameToReplace;
 		int[] listOfFrames;
+		int inMemory;
 		// the while loops step through each call of the simulation
 		while (currentSlice < rsLen) {
 			frameToInsert = rs.getAtIndex(currentSlice);
@@ -51,11 +52,13 @@ class MemorySim {
 			}
 			empty = findIndex(physicalMemory[currentSlice], -1);
 			// if the page we need is already in physical memory...
-			if (findIndex(physicalMemory[currentSlice], frameToInsert) != -1) {
+			inMemory = findIndex(physicalMemory[currentSlice], frameToInsert);
+			if (inMemory != -1) {
+				pageCalled[currentSlice] = inMemory;
 			}
 			// if it's not in memory but there's an empty space for it...
 			else if (empty >= 0) {
-				pageChanged[currentSlice] = empty;
+				pageCalled[currentSlice] = empty;
 				physicalMemory[currentSlice][empty] = frameToInsert;
 				frameArray[frameToInsert].setInserted(currentSlice);
 			}
@@ -91,7 +94,7 @@ class MemorySim {
 				// record removed frame
 				removed[currentSlice] = physicalMemory[currentSlice][frameToReplace];
 				// record new frame spot
-				pageChanged[currentSlice] = frameToReplace;
+				pageCalled[currentSlice] = frameToReplace;
 				// put the new frame in that spot
 				physicalMemory[currentSlice][frameToReplace] = frameToInsert;
 
@@ -200,8 +203,8 @@ class MemorySim {
 			removed[i] = -1;
 		}
 		// set pages changed to -1s
-		for (int i = 0; i < pageChanged.length; i++) {
-			pageChanged[i] = -1;
+		for (int i = 0; i < pageCalled.length; i++) {
+			pageCalled[i] = -1;
 		}
 		// set clean array of frames:
 		for (int i = 0; i < numOfVirtualFrames; i++) {
@@ -224,7 +227,7 @@ class MemorySim {
 		System.out.println("Number of virtual pages: " + numOfVirtualFrames);
 		System.out.println("Number of physical pages: " + numOfPhysicalFrames);
 		System.out.println("---");
-		System.out.println("[brackets] around a page number indicate it was changed.");
+		System.out.println("[brackets] around a page number indicate it was called.");
 		System.out.println("Press enter to step through snapshots of physical memory after each string call. Or, enter \"q\" at any time to return to main menu.");
 
 		Scanner sc = new Scanner(System.in);
@@ -244,7 +247,7 @@ class MemorySim {
 				System.out.print("Physical frame " + i + ":");
 				frameNum = physicalMemory[steppingSlice][i];
 				if (frameNum >= 0) {
-					if (i == pageChanged[steppingSlice]) {
+					if (i == pageCalled[steppingSlice]) {
 						System.out.println("[" + frameNum + "]");
 					} else {
 						System.out.println(" " + frameNum);

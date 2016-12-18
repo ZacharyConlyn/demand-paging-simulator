@@ -1,15 +1,24 @@
+// File name: MemorySim.java
+// Author: Zachary Conlyn
+// Date: December 17 2016
+// Class: CMSC 412
+// Purpose: Memory simulation object that holds information about physical
+// and virtual memory of a system, and has methods to run and print results of
+// various algorithms. Designed to work with Pagesim.java
+
 import java.util.Scanner;
 
 class MemorySim {
-	RefString rs;
-	int[] removed;
-	int[] pageChanged;
-	int rsLen;
+	RefString rs; // reference string object
+	int[] removed; // keep track of removed pages
+	int[] pageChanged; // keep track of physical page that was swapped/changed
+	int rsLen; // length of the reference string (number of calls to virtual memory)
 	int numOfPhysicalFrames;
 	int numOfVirtualFrames;
-	int[][] physicalMemory;
-	Frame[] frameArray;
-	String algoType;
+	int[][] physicalMemory; // first dimension represents "time", 2nd is the
+							// phyiscal memory at that time
+	Frame[] frameArray; // keep track of all the virtual frames in this array
+	String algoType; // keep track of which algorithm the simulation ran
 
 	MemorySim(RefString refs, int phys, int virt) {
 		rs = refs;
@@ -21,7 +30,8 @@ class MemorySim {
 		physicalMemory = new int[rs.getLength()][phys];
 		frameArray = new Frame[virt];
 	}
-
+	// the "generateXXX()" methods use the reference string and supplied information
+	// about the virtual and physical memory to run through simulations.
 	void generateFifo() {
 		initialize();
 		algoType = "FIFO";
@@ -30,6 +40,7 @@ class MemorySim {
 		int empty;
 		int frameToReplace;
 		int[] listOfFrames;
+		// the while loops step through each call of the simulation
 		while (currentSlice < rsLen) {
 			frameToInsert = rs.getAtIndex(currentSlice);
 			empty = findIndex(physicalMemory[currentSlice], -1);
@@ -57,6 +68,8 @@ class MemorySim {
 
 
 			}
+			// make the physical memory for the next call a copy of the physical
+			// memory at the end of this call
 			if ((currentSlice + 1) < rsLen) {
 				for (int i = 0; i < numOfPhysicalFrames; i ++) {
 					physicalMemory[currentSlice +1][i] = physicalMemory[currentSlice][i];
@@ -101,14 +114,14 @@ class MemorySim {
 				// put in the new frame at that spot
 				physicalMemory[currentSlice][frameToReplace] = frameToInsert;
 			}
+			// make the physical memory for the next call a copy of the physical
+			// memory at the end of this call
 			if ((currentSlice + 1) < rsLen) {
 				for (int i = 0; i < numOfPhysicalFrames; i ++) {
 					physicalMemory[currentSlice +1][i] = physicalMemory[currentSlice][i];
 				}
 			}
-
 			currentSlice += 1;
-
 		}
 	}
 
@@ -144,11 +157,14 @@ class MemorySim {
 				// replace it
 				physicalMemory[currentSlice][frameToReplace] = frameToInsert;
 			}
+			// make the physical memory for the next call a copy of the physical
+			// memory at the end of this call
 			if ((currentSlice + 1) < rsLen) {
 				for (int i = 0; i < numOfPhysicalFrames; i ++) {
 					physicalMemory[currentSlice +1][i] = physicalMemory[currentSlice][i];
 				}
 			}
+			// update information for last use of the frame just called/
 			frameArray[frameToInsert].setLastUse(currentSlice);
 			currentSlice += 1;
 		}
@@ -191,11 +207,14 @@ class MemorySim {
 					physicalMemory[currentSlice +1][i] = physicalMemory[currentSlice][i];
 				}
 			}
+			// make the physical memory for the next call a copy of the physical
+			// memory at the end of this call
 			frameArray[frameToInsert].incrementTimesUsed();
 			currentSlice += 1;
 		}
 	}
 
+	// find least frequently used frame, given an array containing frame numbers
 	int findLfu(int[] a) {
 		int lfuIndex = 0;
 		int lfuTimesUsed = frameArray[a[lfuIndex]].getTimesUsed();
@@ -212,6 +231,8 @@ class MemorySim {
 
 		return lfuIndex;
 	}
+
+	// find least recently used frame, given an array containing frame numbers
 	int findLru(int[] a) {
 		int lruIndex = 0;
 		int lruLastUse = frameArray[a[lruIndex]].getLastUse();
@@ -230,6 +251,8 @@ class MemorySim {
 		return lruIndex;
 	}
 
+	// find "least optimal" frame (i.e. frame with longest time until next use),
+	// given an array containing frame numbers
 	int findLeastOptimal(int[] a) {
 		int leastOptimal = a[0];
 		int leastOptimalIndex = 0;
@@ -246,16 +269,23 @@ class MemorySim {
 		return leastOptimalIndex;
 	}
 
+	// runs through each Frame object in the frameArray and finds the next use,
+	// and updates each Frame with that information
 	void calculateNextUse(int n) {
+		// first it sets each Frame's next call to past the end of the reference
+		// string
 		for (int i = 0; i < numOfVirtualFrames; i++) {
 			frameArray[i].setNextUse(rsLen + 1);
 		}
+		// then it works backwards from the end, updating setNextUse() for each
+		// frame called
 		for (int i = rsLen - 1; i >= n; i--) {
 			int called = rs.getAtIndex(i);
 			frameArray[called].setNextUse(i);
 		}
 	}
 
+	// initialize all the arrays used in generateXXX()
 	void initialize() {
 		// set removed to -1s
 		for (int i = 0; i < removed.length; i++) {
@@ -278,6 +308,7 @@ class MemorySim {
 		algoType = "";
 	}
 
+	// find the first inserted Frame, given an array of Frame numbers
 	int findOldest(int[] a) {
 		int oldest = frameArray[a[0]].getInserted();
 		int oldestIndex = 0;
@@ -292,14 +323,14 @@ class MemorySim {
 		return oldestIndex;
 	}
 
-
-
+	// print the results of the simluation, one call at a time
 	void print() {
 		System.out.println("Basic information: ");
 		System.out.println("Algo type: " + algoType);
 		System.out.println("Length of reference string: " + rsLen);
 		System.out.println("Number of virtual pages: " + numOfVirtualFrames);
 		System.out.println("Number of physical pages: " + numOfPhysicalFrames);
+		System.out.println("---");
 		System.out.println("[brackets] around a page number indicate it was changed.");
 		System.out.println("Press enter to step through snapshots of physical memory after each string call. Or, enter \"q\" at any time to return to main menu.");
 
@@ -314,7 +345,7 @@ class MemorySim {
 				System.out.println("Quitting printout.");
 				break;
 			}
-			System.out.println("Snapshot at time " + steppingSlice + ":");
+			System.out.println("Snapshot at call " + (steppingSlice + 1) + ":");
 			System.out.println("Program called virtual frame # " + rs.getAtIndex(steppingSlice));
 			for (int i = 0; i < numOfPhysicalFrames; i ++) {
 				System.out.print("Physical frame " + i + ":");

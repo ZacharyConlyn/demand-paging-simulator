@@ -1,3 +1,10 @@
+// file name: Pagesim.java
+// Author: Zachary Conlyn
+// Date: December 17 2016
+// Class: CMSC 412
+// Purpose: to simulate demand paging for virtual
+// memory with FIFO, OPT, LRU and LFU algorithms
+
 import java.util.Scanner;
 import java.util.ArrayList;
 import java.util.Random;
@@ -72,6 +79,7 @@ class Pagesim {
 				// check that refString has been set:
 				// test rs:
 				if (rsIsSet(rs)) {
+					// create simulation conditions, run it, and print
 					fifoSim = new MemorySim(rs, numOfPhysicalFrames, V_PG);
 					fifoSim.generateFifo();
 					fifoSim.print();
@@ -80,6 +88,7 @@ class Pagesim {
 				case "5":
 				// check that refString has been set:
 				if (rsIsSet(rs)) {
+					// create simulation conditions, run it, and print
 					optSim = new MemorySim(rs, numOfPhysicalFrames, V_PG);
 					optSim.generateOpt();
 					optSim.print();
@@ -88,6 +97,7 @@ class Pagesim {
 				case "6":
 				// check that refString has been set:
 				if (rsIsSet(rs)) {
+					// create simulation conditions, run it, and print
 					lruSim = new MemorySim(rs, numOfPhysicalFrames, V_PG);
 					lruSim.generateLru();
 					lruSim.print();
@@ -96,6 +106,7 @@ class Pagesim {
 				case "7":
 				// check that refString has been set:
 				if (rsIsSet(rs)) {
+					// create simulation conditions, run it, and print
 					lfuSim = new MemorySim(rs, numOfPhysicalFrames, V_PG);
 					lfuSim.generateLfu();
 					lfuSim.print();

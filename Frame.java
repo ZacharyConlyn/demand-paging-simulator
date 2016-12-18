@@ -1,3 +1,10 @@
+// File name: Frame.java
+// Author: Zachary Conlyn
+// Date: December 17, 2016
+// Class: CMSC 412
+// Purpose: Simple object to represent a virtual page frame and meta-information
+// needed to run page replacement algorithms. Designed to work with Pagesim.java
+
 class Frame {
 	int number;
 	int inserted;
@@ -12,6 +19,7 @@ class Frame {
 		lastUse = -1;
 		timesUsed = 0;
 	}
+	// various mutator and accessor methods for attributes
 	void setNum(int n) {
 		number = n;
 	}
@@ -26,9 +34,6 @@ class Frame {
 	}
 	void setNextUse(int n) {
 		nextUse = n;
-	}
-	void decrementNextUse() {
-		nextUse -= 1;
 	}
 	int getNextUse() {
 		return nextUse;
